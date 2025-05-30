@@ -193,3 +193,80 @@ class WelcomePage(tk.Frame):
     def bangkit(self):
         self.label_image.config(image=self.image2)
         self.after(1500, lambda: self.controller.show_frame("TeamIntroductionPage"))
+
+class TeamIntroductionPage(tk.Frame):
+    def __init__(self, master, controller):
+        super().__init__(master, bg="#0f1626")
+        self.controller = controller
+
+        self.label_title = tk.Label(self, text="Meet Our Team",
+                                     font=("Poppins", 38, "bold underline"), fg="#00ffcc", bg="#0f1626")
+        self.label_title.pack(pady=30)
+
+        team_members = [
+            ("Elsy Aliffia Sirony Putri", "2417051025"),
+            ("Kharisma Jaka Harum", "2417051068"),
+            ("Rheal Iftiqar Rozak", "2417051029"),
+            ("Yulia Nuritnasari", "2457051008")
+        ]
+
+        self.scroll_canvas = tk.Canvas(self, bg="#0f1626", highlightthickness=0, height=300)
+        self.scroll_canvas.pack(fill="x", padx=50)
+        self.scroll_frame = tk.Frame(self.scroll_canvas, bg="#0f1626")
+        self.scroll_canvas.create_window((0,0), window=self.scroll_frame, anchor="nw")
+
+        self.h_scrollbar = tk.Scrollbar(self, orient="horizontal", command=self.scroll_canvas.xview,
+                                        troughcolor="#00ffcc", bd=0, highlightthickness=0,
+                                        activebackground="#00cca3")
+        self.h_scrollbar.pack(fill="x", padx=50)
+        self.scroll_canvas.configure(xscrollcommand=self.h_scrollbar.set)
+
+        self.member_frames = []
+        for name, description in team_members:
+            member_frame = tk.Frame(self.scroll_frame, bg="#004f4f", bd=4, relief="ridge", padx=20, pady=15)
+            member_frame.pack(side="left", padx=20, pady=20)
+            self.member_frames.append(member_frame)
+
+            member_label = tk.Label(member_frame, text=name,
+                                    font=("Poppins", 16, "bold"), fg="#40e0d0", bg="#004f4f")
+            member_label.pack(pady=(0,8))
+
+            desc_label = tk.Label(member_frame, text=description,
+                                  font=("Poppins", 12, "italic"), fg="#a0f0f0", bg="#004f4f", wraplength=250, justify="center")
+            desc_label.pack()
+
+        self.scroll_frame.update_idletasks()
+        self.scroll_canvas.config(scrollregion=self.scroll_canvas.bbox("all"))
+
+        self.back_button = tk.Button(self, text="Back to Welcome",
+                                      font=("Poppins", 22, "bold"), fg="#0f1626", bg="#00ffcc",
+                                      activebackground="#00cca3", activeforeground="white",
+                                      bd=0, padx=20, pady=10, cursor="hand2",
+                                      command=lambda: controller.show_frame("WelcomePage"))
+        self.back_button.pack(pady=30)
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Pendekar Training Grounds")
+        self.geometry("1280x720")
+        self.resizable(False, False)
+        self.frames = {}
+
+        container = tk.Frame(self)
+        container.pack(fill="both", expand=True)
+
+        for Page in (WelcomePage, TeamIntroductionPage):
+            frame = Page(container, self)
+            self.frames[Page.__name__] = frame
+            frame.place(relwidth=1, relheight=1)
+
+        self.show_frame("WelcomePage")
+
+    def show_frame(self, page_name):
+        frame = self.frames[page_name]
+        frame.tkraise()
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
