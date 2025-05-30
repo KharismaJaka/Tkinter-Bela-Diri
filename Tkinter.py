@@ -130,3 +130,66 @@ class WelcomePage(tk.Frame):
     def create_feedback_label(self):
         self.feedback_label = tk.Label(self, text="", font=("Poppins", 16, "bold italic"), fg="#00ffcc", bg="#0f1626")
         self.feedback_label.place(relx=0.5, rely=0.58, anchor="center")
+
+    def create_image_label(self):
+        self.image1 = ImageTk.PhotoImage(Image.open("pendekar_diam.png").resize((320, 320)))
+        self.image2 = ImageTk.PhotoImage(Image.open("pendekar_bangkit.png").resize((320, 320)))
+        self.label_image = tk.Label(self, image=self.image1, bg="#0f1626", bd=0)
+        self.label_image.place(relx=0.5, rely=0.77, anchor="center")
+
+    def create_credit_info(self):
+        self.label_credit = tk.Label(
+            self,
+            text="© 2025 SDA Project - Universitas Lampung",
+            font=("Poppins", 12, "bold"),
+            fg="#00ffcc",
+            bg="#0f1626"
+        )
+        self.label_credit.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=10)
+
+        self.info_button = tk.Button(
+            self,
+            text="❓ Info",
+            font=("Poppins", 12),
+            fg="#0f1626", bg="#00ffcc", activebackground="#00cca3",
+            bd=0, padx=20, pady=5, cursor="hand2", command=self.show_info
+        )
+        self.info_button.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=40)
+
+    def show_info(self):
+        messagebox.showinfo("Informasi Aplikasi",
+                            "👋 Selamat datang di Training Grounds!\n\n"
+                            "Aplikasi ini adalah bagian dari proyek akhir Struktur Data dan Algoritma.\n\n"
+                            "- Dibuat dengan Tkinter\n"
+                            "- Menggunakan modul PIL untuk gambar\n"
+                            "- Berbasis antarmuka visual dan animasi\n\n"
+                            "Klik START untuk memulai perjalananmu!")
+
+    def bangkit_with_animation(self):
+        def bounce(count=0):
+            self.start_button.config(font=("Poppins", 24 if count % 2 == 0 else 22, "bold"))
+            if count < 3:
+                self.after(100, lambda: bounce(count + 1))
+            else:
+                self.show_feedback()
+        bounce()
+
+    def show_feedback(self):
+        self.feedback_label.config(text="Memulai...")
+        alpha = 1.0
+
+        def fade_out():
+            nonlocal alpha
+            alpha -= 0.1
+            if alpha <= 0:
+                self.feedback_label.config(text="")
+                self.bangkit()
+            else:
+                fg_color = f"#{int(0 * alpha):02x}{int(255 * alpha):02x}{int(204 * alpha):02x}"
+                self.feedback_label.config(fg=fg_color)
+                self.after(100, fade_out)
+        fade_out()
+
+    def bangkit(self):
+        self.label_image.config(image=self.image2)
+        self.after(1500, lambda: self.controller.show_frame("TeamIntroductionPage"))
