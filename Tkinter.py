@@ -18,6 +18,7 @@ class WelcomePage(tk.Frame):
         self.create_feedback_label()
         self.create_image_label()
         self.create_credit_info()
+        self.create_settings_button() # Added settings button
 
     def draw_background(self):
         self.draw_sky_gradient()
@@ -78,7 +79,7 @@ class WelcomePage(tk.Frame):
 
     def draw_trees(self):
         self.draw_tree(80, self.height - 180)
-         self.draw_tree_right(self.width - 200, self.height - 180)
+        self.draw_tree_right(self.width - 200, self.height - 180)
 
     def draw_tree(self, x, y):
         self.canvas.create_rectangle(x + 10, y, x + 30, y + 100, fill="#5D3A00", outline="#3E2700")
@@ -155,6 +156,28 @@ class WelcomePage(tk.Frame):
             bd=0, padx=20, pady=5, cursor="hand2", command=self.show_info
         )
         self.info_button.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=40)
+
+    def create_settings_button(self):
+        self.settings_button = tk.Button(
+            self,
+            text="⚙️ Settings",
+            font=("Poppins", 12),
+            fg="#0f1626", bg="#00ffcc", activebackground="#00cca3",
+            bd=0, padx=20, pady=5, cursor="hand2", command=self.open_settings
+        )
+        self.settings_button.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=70)
+
+    def open_settings(self):
+        settings_window = tk.Toplevel(self)
+        settings_window.title("Settings")
+        settings_window.geometry("400x300")
+        settings_window.configure(bg="#0f1626")
+
+        label = tk.Label(settings_window, text="Settings", font=("Poppins", 24), fg="#00ffcc", bg="#0f1626")
+        label.pack(pady=20)
+
+        close_button = tk.Button(settings_window, text="Close", command=settings_window.destroy)
+        close_button.pack(pady=20)
 
     def show_info(self):
         messagebox.showinfo("Informasi Aplikasi",
