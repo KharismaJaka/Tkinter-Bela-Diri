@@ -4,11 +4,46 @@ from PIL import ImageTk, Image
 
 class WelcomePage(tk.Frame):
     def __init__(self, master, controller):
-        super().__init__(master, bg="#0f1626")
+        super().__init__(master)
         self.controller = controller
         self.width, self.height = 1280, 720
 
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height, highlightthickness=0, bg="#0f1626")
+        # Default theme: dark
+        self.themes = {
+            "dark": {
+                "bg": "#0f1626",
+                "fg": "#00ffcc",
+                "btn_bg": "#00ffcc",
+                "btn_fg": "#0f1626",
+                "canvas_bg": "#0f1626",
+                "desc_fg": "#00ffcc",
+                "credit_fg": "#00ffcc",
+                "member_bg": "#004f4f",
+                "member_fg": "#40e0d0",
+                "member_desc_fg": "#a0f0f0",
+                "scrollbar_trough": "#00ffcc",
+                "scrollbar_active_bg": "#00cca3"
+            },
+            "light": {
+                "bg": "#ffffff",
+                "fg": "#2563eb",
+                "btn_bg": "#2563eb",
+                "btn_fg": "#ffffff",
+                "canvas_bg": "#ffffff",
+                "desc_fg": "#6b7280",
+                "credit_fg": "#2563eb",
+                "member_bg": "#e0e7ff",
+                "member_fg": "#1e3a8a",
+                "member_desc_fg": "#4b5563",
+                "scrollbar_trough": "#2563eb",
+                "scrollbar_active_bg": "#1e40af"
+            }
+        }
+        self.current_theme = "dark"
+
+        self.config(bg=self.themes[self.current_theme]["bg"])
+
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height, highlightthickness=0, bg=self.themes[self.current_theme]["canvas_bg"])
         self.canvas.pack(fill="both", expand=True)
 
         self.draw_background()
@@ -18,16 +53,60 @@ class WelcomePage(tk.Frame):
         self.create_feedback_label()
         self.create_image_label()
         self.create_credit_info()
-        self.create_settings_button() # Added settings button
+        self.create_settings_button()
+        self.create_theme_toggle_button()
+
+    def apply_theme(self):
+        theme = self.themes[self.current_theme]
+        self.config(bg=theme["bg"])
+        self.canvas.config(bg=theme["canvas_bg"])
+        # Redraw background since colors changed
+        self.canvas.delete("all")
+        self.draw_background()
+        # Update texts and buttons colors
+        self.create_title()
+        self.create_description()
+        self.start_button.config(
+            fg=theme["btn_fg"], bg=theme["btn_bg"],
+            activebackground="#00cca3" if self.current_theme=="dark" else "#1e40af",
+            activeforeground="white"
+        )
+        self.feedback_label.config(fg=theme["fg"], bg=theme["bg"])
+        self.label_credit.config(fg=theme["credit_fg"], bg=theme["bg"])
+        self.info_button.config(
+            fg=theme["btn_fg"], bg=theme["btn_bg"],
+            activebackground="#00cca3" if self.current_theme=="dark" else "#1e40af"
+        )
+        self.settings_button.config(
+            fg=theme["btn_fg"], bg=theme["btn_bg"],
+            activebackground="#00cca3" if self.current_theme=="dark" else "#1e40af"
+        )
+        self.theme_toggle_button.config(
+            fg=theme["btn_fg"], bg=theme["btn_bg"],
+            activebackground="#00cca3" if self.current_theme=="dark" else "#1e40af"
+        )
+        self.label_desc.config(fg=theme["desc_fg"], bg=theme["bg"])
+        self.label_image.config(bg=theme["bg"])
+
+    def toggle_theme(self):
+        self.current_theme = "light" if self.current_theme == "dark" else "dark"
+        self.apply_theme()
 
     def draw_background(self):
-        self.draw_sky_gradient()
-        self.draw_sun(1150, 120, 70)
-        self.draw_clouds()
-        self.draw_grass(0, self.height - 60, self.width, 60)
-        self.draw_trees()
-        
+        # For the light theme, simplify background to white canvas
+        if self.current_theme == "light":
+            self.canvas.create_rectangle(0, 0, self.width, self.height, fill=self.themes["light"]["canvas_bg"], outline="")
+        else:
+            self.draw_sky_gradient()
+            self.draw_sun(1150, 120, 70)
+            self.draw_clouds()
+            self.draw_grass(0, self.height - 60, self.width, 60)
+            self.draw_trees()
+
     def draw_sky_gradient(self):
+        if self.current_theme == "light":
+            # No gradient, just solid light sky
+            return
         from_colors = [(10, 25, 70), (25, 76, 146), (82, 137, 217), (176, 214, 235)]
         steps = 150
         section_height = self.height / (len(from_colors) - 1)
@@ -47,6 +126,9 @@ class WelcomePage(tk.Frame):
             self.canvas.create_rectangle(0,y1,self.width,y2, fill=color, outline="")
 
     def draw_sun(self, x, y, radius):
+        if self.current_theme == "light":
+            self.canvas.create_oval(x - radius, y - radius, x + radius, y + radius, fill="#FFEA00", outline="")
+            return
         colors = ["#FFFACD", "#FFF68F", "#FFEF6E", "#FFD700"]
         for i, color in enumerate(colors[::-1]):
             r = radius + i * 12
@@ -54,11 +136,15 @@ class WelcomePage(tk.Frame):
         self.canvas.create_oval(x - radius, y - radius, x + radius, y + radius, fill="#FFEA00", outline="")
 
     def draw_clouds(self):
+        if self.current_theme == "light":
+            return  # Skip clouds in light mode for simplicity
         cloud_positions = [(200, 120, 120), (600, 90, 150), (900, 150, 100), (1100, 130, 130)]
         for x, y, size in cloud_positions:
             self.draw_cloud(x, y, size)
 
     def draw_cloud(self, x, y, size):
+        if self.current_theme == "light":
+            return
         radius = size // 4
         circles = [
             (x, y),
@@ -72,79 +158,100 @@ class WelcomePage(tk.Frame):
                                     fill="white", outline="")
 
     def draw_grass(self, x_start, y_start, width_area, height_area):
+        if self.current_theme == "light":
+            return  # No grass in light mode
         for i in range(0, width_area, 15):
             x = x_start + i
             points = [x, y_start, x + 7, y_start - 30, x + 14, y_start]
             self.canvas.create_polygon(points, fill="#228B22", outline="#176917")
 
     def draw_trees(self):
+        if self.current_theme == "light":
+            return
         self.draw_tree(80, self.height - 180)
         self.draw_tree_right(self.width - 200, self.height - 180)
 
     def draw_tree(self, x, y):
+        if self.current_theme == "light":
+            return
         self.canvas.create_rectangle(x + 10, y, x + 30, y + 100, fill="#5D3A00", outline="#3E2700")
         self.canvas.create_oval(x - 50, y - 120, x + 70, y + 20, fill="#065214", outline="#033d0a")
         self.canvas.create_oval(x - 40, y - 150, x + 60, y - 40, fill="#0A7B1E", outline="#05460d")
         self.canvas.create_oval(x - 20, y - 180, x + 40, y - 80, fill="#0B9D2D", outline="#057318")
 
     def draw_tree_right(self, x, y):
+        if self.current_theme == "light":
+            return
         self.canvas.create_rectangle(x + 10, y, x + 30, y + 100, fill="#5D3A00", outline="#3E2700")
         self.canvas.create_oval(x - 30, y - 120, x + 90, y + 20, fill="#065214", outline="#033d0a")
         self.canvas.create_oval(x - 20, y - 150, x + 80, y - 40, fill="#0A7B1E", outline="#05460d")
         self.canvas.create_oval(x, y - 180, x + 60, y - 80, fill="#0B9D2D", outline="#057318")
 
     def create_title(self):
-        self.create_gaming_text(self.width // 2, 180, "WELCOME TO THE TRAINING GROUNDS", 48, "#00ffcc", "#003333")
-
-    def create_gaming_text(self, x, y, text, size, fg_color, outline_color):
+        self.canvas.delete("title_texts")
+        x = self.width // 2
+        y = 180
+        text = "WELCOME TO THE TRAINING GROUNDS"
+        size = 48
+        if self.current_theme == "light":
+            fg_color = "#2563eb"
+            outline_color = "#a3bffa"
+        else:
+            fg_color = "#00ffcc"
+            outline_color = "#003333"
         offsets = [(-2, 0), (2, 0), (0, -2), (0, 2)]
         for ox, oy in offsets:
-            self.canvas.create_text(x + ox, y + oy, text=text, font=("Poppins", size, "bold"), fill=outline_color)
-        self.canvas.create_text(x, y, text=text, font=("Poppins", size, "bold"), fill=fg_color)
+            self.canvas.create_text(x + ox, y + oy, text=text, font=("Poppins", size, "bold"), fill=outline_color, tags="title_texts")
+        self.canvas.create_text(x, y, text=text, font=("Poppins", size, "bold"), fill=fg_color, tags="title_texts")
 
     def create_description(self):
         desc_text = "Get ready to embark on an epic journey!\nPress START to begin your adventure."
         if hasattr(self, 'label_desc'):
             self.label_desc.destroy()
+        theme = self.themes[self.current_theme]
         self.label_desc = tk.Label(
             self,
             text=desc_text,
             font=("Segoe UI", 24, "bold italic"),
-            fg="#00ffcc",
-            bg="#0f1626",
+            fg=theme["desc_fg"],
+            bg=theme["bg"],
             justify="center",
             wraplength=700
         )
         self.label_desc.place(relx=0.5, rely=0.37, anchor="center")
 
     def create_start_button(self):
+        theme = self.themes[self.current_theme]
         self.start_button = tk.Button(
             self,
             text="START YOUR JOURNEY",
             font=("Poppins", 22, "bold"),
-            fg="#0f1626", bg="#00ffcc", activebackground="#00cca3",
+            fg=theme["btn_fg"], bg=theme["btn_bg"], activebackground="#00cca3",
             activeforeground="white", bd=0, padx=60, pady=18,
             cursor="hand2", command=self.bangkit_with_animation
         )
         self.start_button.place(relx=0.5, rely=0.5, anchor="center")
 
     def create_feedback_label(self):
-        self.feedback_label = tk.Label(self, text="", font=("Poppins", 16, "bold italic"), fg="#00ffcc", bg="#0f1626")
+        theme = self.themes[self.current_theme]
+        self.feedback_label = tk.Label(self, text="", font=("Poppins", 16, "bold italic"), fg=theme["fg"], bg=theme["bg"])
         self.feedback_label.place(relx=0.5, rely=0.58, anchor="center")
 
     def create_image_label(self):
         self.image1 = ImageTk.PhotoImage(Image.open("pendekar_diam.png").resize((320, 320)))
         self.image2 = ImageTk.PhotoImage(Image.open("pendekar_bangkit.png").resize((320, 320)))
-        self.label_image = tk.Label(self, image=self.image1, bg="#0f1626", bd=0)
+        theme = self.themes[self.current_theme]
+        self.label_image = tk.Label(self, image=self.image1, bg=theme["bg"], bd=0)
         self.label_image.place(relx=0.5, rely=0.77, anchor="center")
 
     def create_credit_info(self):
+        theme = self.themes[self.current_theme]
         self.label_credit = tk.Label(
             self,
             text="© 2025 SDA Project - Universitas Lampung",
             font=("Poppins", 12, "bold"),
-            fg="#00ffcc",
-            bg="#0f1626"
+            fg=theme["credit_fg"],
+            bg=theme["bg"]
         )
         self.label_credit.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=10)
 
@@ -152,28 +259,41 @@ class WelcomePage(tk.Frame):
             self,
             text="❓ Info",
             font=("Poppins", 12),
-            fg="#0f1626", bg="#00ffcc", activebackground="#00cca3",
+            fg=theme["btn_fg"], bg=theme["btn_bg"], activebackground="#00cca3",
             bd=0, padx=20, pady=5, cursor="hand2", command=self.show_info
         )
         self.info_button.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=40)
 
     def create_settings_button(self):
+        theme = self.themes[self.current_theme]
         self.settings_button = tk.Button(
             self,
             text="⚙️ Settings",
             font=("Poppins", 12),
-            fg="#0f1626", bg="#00ffcc", activebackground="#00cca3",
+            fg=theme["btn_fg"], bg=theme["btn_bg"], activebackground="#00cca3",
             bd=0, padx=20, pady=5, cursor="hand2", command=self.open_settings
         )
         self.settings_button.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=70)
+
+    def create_theme_toggle_button(self):
+        theme = self.themes[self.current_theme]
+        self.theme_toggle_button = tk.Button(
+            self,
+            text="Toggle Theme",
+            font=("Poppins", 12),
+            fg=theme["btn_fg"], bg=theme["btn_bg"], activebackground="#00cca3",
+            bd=0, padx=20, pady=5, cursor="hand2", command=self.toggle_theme
+        )
+        self.theme_toggle_button.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=110)
 
     def open_settings(self):
         settings_window = tk.Toplevel(self)
         settings_window.title("Settings")
         settings_window.geometry("400x300")
-        settings_window.configure(bg="#0f1626")
+        theme = self.themes[self.current_theme]
+        settings_window.configure(bg=theme["bg"])
 
-        label = tk.Label(settings_window, text="Settings", font=("Poppins", 24), fg="#00ffcc", bg="#0f1626")
+        label = tk.Label(settings_window, text="Settings", font=("Poppins", 24), fg=theme["fg"], bg=theme["bg"])
         label.pack(pady=20)
 
         close_button = tk.Button(settings_window, text="Close", command=settings_window.destroy)
@@ -219,7 +339,7 @@ class WelcomePage(tk.Frame):
 
 class TeamIntroductionPage(tk.Frame):
     def __init__(self, master, controller):
-        super().__init__(master, bg="#0f1626")
+        super().__init__(master)
         self.controller = controller
 
         self.label_title = tk.Label(self, text="Meet Our Team",
