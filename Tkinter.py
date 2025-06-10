@@ -296,8 +296,38 @@ class WelcomePage(tk.Frame):
         label = tk.Label(settings_window, text="Settings", font=("Poppins", 24), fg=theme["fg"], bg=theme["bg"])
         label.pack(pady=20)
 
-        close_button = tk.Button(settings_window, text="Close", command=settings_window.destroy)
-        close_button.pack(pady=20)
+        self.data_privacy_var = tk.BooleanVar()
+
+        privacy_checkbox = tk.Checkbutton(
+            settings_window,
+            text="I agree to the data privacy policy",
+            variable=self.data_privacy_var,
+            font=theme.get("font", ("Poppins", 12)),
+            fg=theme["fg"],
+            bg=theme["bg"],
+            selectcolor=theme["bg"],
+            activebackground=theme["bg"],
+            activeforeground=theme["fg"]      
+        )  
+        privacy_checkbox.pack(pady=10)
+
+        save_button = tk.Button(
+            settings_window,
+            text="Save Settings",
+            font=("Poppins", 12),
+            fg=theme["btn_fg"], bg=theme["btn_bg"],
+            activebackground="#00cca3" if self.current_theme == "dark" else "#1e40af",
+            bd=0, padx=20, pady=5, cursor="hand2",
+            command=lambda: self.save_settings(settings_window)
+        )
+        save_button.pack(pady=10)
+
+    def save_settings(self, window):
+        if self.data_privacy_var.get():
+            messagebox.showinfo("Settings Saved", "Your settings have been saved successfully! 🎉")
+            window.destroy()
+        else:
+            messagebox.showwarning("Data Privacy Required", "You must agree to the data privacy policy before proceeding.")
 
     def show_info(self):
         messagebox.showinfo("Informasi Aplikasi",
