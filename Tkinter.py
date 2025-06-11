@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 from PIL import ImageTk, Image
 
 class WelcomePage(tk.Frame):
@@ -8,7 +8,6 @@ class WelcomePage(tk.Frame):
         self.controller = controller
         self.width, self.height = 1280, 720
 
-        # Default theme: dark
         self.themes = {
             "dark": {
                 "bg": "#0f1626",
@@ -60,10 +59,8 @@ class WelcomePage(tk.Frame):
         theme = self.themes[self.current_theme]
         self.config(bg=theme["bg"])
         self.canvas.config(bg=theme["canvas_bg"])
-        # Redraw background since colors changed
         self.canvas.delete("all")
         self.draw_background()
-        # Update texts and buttons colors
         self.create_title()
         self.create_description()
         self.start_button.config(
@@ -93,7 +90,6 @@ class WelcomePage(tk.Frame):
         self.apply_theme()
 
     def draw_background(self):
-        # For the light theme, simplify background to white canvas
         if self.current_theme == "light":
             self.canvas.create_rectangle(0, 0, self.width, self.height, fill=self.themes["light"]["canvas_bg"], outline="")
         else:
@@ -296,6 +292,8 @@ class WelcomePage(tk.Frame):
         label = tk.Label(settings_window, text="Settings", font=("Poppins", 24), fg=theme["fg"], bg=theme["bg"])
         label.pack(pady=20)
 
+        close_button = tk.Button(settings_window, text="Close", command=settings_window.destroy)
+        close_button.pack(pady=20)
         self.data_privacy_var = tk.BooleanVar()
 
         privacy_checkbox = tk.Checkbutton(
@@ -417,6 +415,92 @@ class TeamIntroductionPage(tk.Frame):
                                       bd=0, padx=20, pady=10, cursor="hand2",
                                       command=lambda: controller.show_frame("WelcomePage"))
         self.back_button.pack(pady=30)
+    
+    def show_frame(self, page_name):
+        frame = self.frames[page_name]
+        frame.tkraise()
+
+class ScoreboardApp(tk.Frame):
+    def __init__(self, master, controller):
+        super().__init__(master)
+        self.controller = controller
+        self.time_left = 10
+        self.timer_running = False
+        self.ao_score = 0
+        self.aka_score = 0
+
+        self.frame = tk.Frame(self, bg="gray20", padx=10, pady=10)
+        self.frame.pack(expand=True)
+
+        self.setup_ui()
+
+    def setup_ui(self):
+        tk.Label(self.frame, text="Division: Division name", font=("Arial", 14), fg="white", bg="gray20").grid(row=0, column=1, columnspan=2)
+
+        self.ao_name = ttk.Entry(self.frame)
+        self.ao_name.grid(row=1, column=0)
+        self.aka_name = ttk.Entry(self.frame)
+        self.aka_name.grid(row=1, column=3)
+
+        self.ao_name.insert(0, "Kisodori Shiho")
+        self.aka_name.insert(0, "Keneth")
+
+        self.ao_score_label = tk.Label(self.frame, text="0", font=("Arial", 48), fg="white", bg="blue")
+        self.ao_score_label.grid(row=2, column=0, rowspan=2, padx=10, pady=10)
+        tk.Button(self.frame, text="+1", command=self.add_ao).grid(row=2, column=1)
+        tk.Button(self.frame, text="-1", command=self.sub_ao).grid(row=3, column=1)
+
+        tk.Label(self.frame, text="🏳️", font=("Arial", 36)).grid(row=2, column=2, rowspan=2)
+
+        self.aka_score_label = tk.Label(self.frame, text="0", font=("Arial", 48), fg="white", bg="red")
+        self.aka_score_label.grid(row=2, column=3, rowspan=2, padx=10, pady=10)
+        tk.Button(self.frame, text="+1", command=self.add_aka).grid(row=2, column=4)
+        tk.Button(self.frame, text="-1", command=self.sub_aka).grid(row=3, column=4)
+
+        self.timer_label = tk.Label(self.frame, text="0:10", font=("Arial", 36), bg="black", fg="lime")
+        self.timer_label.grid(row=4, column=0, columnspan=5, pady=10)
+
+        tk.Button(self.frame, text="Start", command=self.start_timer).grid(row=5, column=0)
+        tk.Button(self.frame, text="Stop", command=self.stop_timer).grid(row=5, column=1)
+        tk.Button(self.frame, text="Reset", command=self.reset_timer).grid(row=5, column=2)
+        tk.Button(self.frame, text="Back", command=lambda: self.controller.show_frame("WelcomePage")).grid(row=5, column=3)
+        tk.Button(self.frame, text="Done", command=self.controller.quit).grid(row=5, column=4)
+
+    def update_timer(self):
+        if self.timer_running and self.time_left > 0:
+            self.time_left -= 1
+            minutes = self.time_left // 60
+            seconds = self.time_left % 60
+            self.timer_label.config(text=f"{minutes}:{seconds:02d}")
+            self.after(1000, self.update_timer)
+
+    def start_timer(self):
+        self.timer_running = True
+        self.update_timer()
+
+    def stop_timer(self):
+        self.timer_running = False
+
+    def reset_timer(self):
+        self.stop_timer()
+        self.time_left = 10
+        self.timer_label.config(text="0:10")
+
+    def add_ao(self):
+        self.ao_score += 1
+        self.ao_score_label.config(text=str(self.ao_score))
+
+    def sub_ao(self):
+        self.ao_score = max(0, self.ao_score - 1)
+        self.ao_score_label.config(text=str(self.ao_score))
+
+    def add_aka(self):
+        self.aka_score += 1
+        self.aka_score_label.config(text=str(self.aka_score))
+
+    def sub_aka(self):
+        self.aka_score = max(0, self.aka_score - 1)
+        self.aka_score_label.config(text=str(self.aka_score))
 
 class App(tk.Tk):
     def __init__(self):
@@ -429,7 +513,7 @@ class App(tk.Tk):
         container = tk.Frame(self)
         container.pack(fill="both", expand=True)
 
-        for Page in (WelcomePage, TeamIntroductionPage):
+        for Page in (WelcomePage, TeamIntroductionPage, ScoreboardApp):
             frame = Page(container, self)
             self.frames[Page.__name__] = frame
             frame.place(relwidth=1, relheight=1)
@@ -439,6 +523,11 @@ class App(tk.Tk):
     def show_frame(self, page_name):
         frame = self.frames[page_name]
         frame.tkraise()
+
+    def bangkit(self):
+        self.label_image.config(image=self.image2)
+        self.after(1500, lambda: self.controller.show_frame("ScoreboardApp"))
+
 
 if __name__ == "__main__":
     app = App()
