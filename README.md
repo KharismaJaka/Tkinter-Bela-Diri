@@ -43,8 +43,8 @@ Aplikasi ini menghadirkan antarmuka grafis menarik, dukungan tema gelap/terang, 
 4.	Yulia Nuritnasari — 2457051008 
 
 📁 Struktur File
-beladiritolong.py       
-pendekar_diam.png       # Gambar pendekar saat diam
-pendekar_bangkit.png    # Gambar pendekar bangkit
-score.csv               # tempat menyimpan hasil skor
+- beladiritolong.py       
+- pendekar_diam.png       # Gambar pendekar saat diam
+- pendekar_bangkit.png    # Gambar pendekar bangkit
+- score.csv               # tempat menyimpan hasil skor
 
