@@ -1,4 +1,4 @@
-🥋 Pendekar Training Grounds — SDA Final Project
+#🥋 Pendekar Training Grounds — SDA Final Project
 📌 Deskripsi
 Pendekar Training Grounds adalah aplikasi interaktif berbasis Python & Tkinter yang dirancang untuk simulasi pelatihan bela diri virtual. Project ini dikembangkan sebagai bagian dari tugas akhir mata kuliah Struktur Data dan Algoritma di Universitas Lampung 🏫.
 Aplikasi ini menghadirkan antarmuka grafis menarik, dukungan tema gelap/terang, animasi interaktif, serta fitur pelatihan dan pencatatan skor pertarungan.
