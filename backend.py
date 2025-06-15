@@ -7,19 +7,19 @@ class CSVHandler:
         self.data_dir = "data"
         os.makedirs(self.data_dir, exist_ok=True)
         
-        # File paths
+        
         self.team_members_file = os.path.join(self.data_dir, "team_members.csv")
         self.scoreboard_file = os.path.join(self.data_dir, "scoreboard_data.csv")
         self.settings_file = os.path.join(self.data_dir, "settings.csv")
         self.feedback_file = os.path.join(self.data_dir, "feedback_log.csv")
         self.history_file = os.path.join(self.data_dir, "game_history.csv")
         
-        # Initialize files if they don't exist
+        
         self._initialize_files()
 
     def _initialize_files(self):
         """Create CSV files with headers if they don't exist"""
-        # Team members
+        
         if not os.path.exists(self.team_members_file):
             with open(self.team_members_file, 'w', newline='') as f:
                 writer = csv.writer(f)
@@ -31,7 +31,7 @@ class CSVHandler:
                     ['Yulia Nuritnasari', '2457051008']
                 ])
         
-        # Scoreboard data
+        
         if not os.path.exists(self.scoreboard_file):
             with open(self.scoreboard_file, 'w', newline='') as f:
                 writer = csv.writer(f)
@@ -39,7 +39,7 @@ class CSVHandler:
                 writer.writerow(['Naruto', '0', datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
                 writer.writerow(['Sasuke', '0', datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
         
-        # Settings
+        
         if not os.path.exists(self.settings_file):
             with open(self.settings_file, 'w', newline='') as f:
                 writer = csv.writer(f)
@@ -47,13 +47,13 @@ class CSVHandler:
                 writer.writerow(['theme', 'dark'])
                 writer.writerow(['data_privacy', 'False'])
         
-        # Feedback log (just create empty with header)
+        
         if not os.path.exists(self.feedback_file):
             with open(self.feedback_file, 'w', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(['timestamp', 'feedback_message'])
         
-        # Game history (just create empty with header)
+        
         if not os.path.exists(self.history_file):
             with open(self.history_file, 'w', newline='') as f:
                 writer = csv.writer(f)
@@ -94,7 +94,7 @@ class CSVHandler:
         with open(self.settings_file, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                # Convert string 'False'/'True' to boolean
+                
                 if row['value'].lower() in ('true', 'false'):
                     settings[row['setting_name']] = row['value'].lower() == 'true'
                 else:
