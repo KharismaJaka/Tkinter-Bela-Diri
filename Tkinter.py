@@ -514,9 +514,9 @@ class TeamIntroductionPage(tk.Frame):
                 "member_bg": "#004f4f",
                 "member_fg": "#40e0d0",
                 "member_desc_fg": "#a0f0f0",
-                "btn_fg": "#00ffcc", # Add this line
-                "btn_bg": "#004f4f", # Add this line
-                "scrollbar_active_bg": "#00cca3", # Add this line
+                "btn_fg": "#00ffcc",
+                "btn_bg": "#004f4f", 
+                "scrollbar_active_bg": "#00cca3", 
             },
             "light": {
                 "bg": "#ffffff",
@@ -524,9 +524,9 @@ class TeamIntroductionPage(tk.Frame):
                 "member_bg": "#e0e7ff",
                 "member_fg": "#1e3a8a",
                 "member_desc_fg": "#4b5563",
-                "btn_fg": "#2563eb", # Add this line
-                "btn_bg": "#e0e7ff", # Add this line
-                "scrollbar_active_bg": "#1e40af", # Add this line
+                "btn_fg": "#2563eb", 
+                "btn_bg": "#e0e7ff", 
+                "scrollbar_active_bg": "#1e40af", 
             },
         }
         self.current_theme = "dark"
@@ -550,7 +550,7 @@ class TeamIntroductionPage(tk.Frame):
             ("Yulia Nuritnasari", "2457051008"),
         ]
 
-        # Scroll container frame with horizontal scrollbar
+       
         self.scroll_canvas = tk.Canvas(self, bg=theme["bg"], highlightthickness=0, height=310)
         self.scroll_frame = tk.Frame(self.scroll_canvas, bg=theme["bg"])
         self.h_scrollbar = tk.Scrollbar(
@@ -563,7 +563,7 @@ class TeamIntroductionPage(tk.Frame):
         self.h_scrollbar.pack(fill="x", padx=60, pady=(0,20))
         self.scroll_window = self.scroll_canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw")
 
-        self.member_frames = [] # Keep references to member frames
+        self.member_frames = [] 
 
         for name, description in team_members:
             member_frame = tk.Frame(self.scroll_frame, bg=theme["member_bg"], bd=4, relief="ridge", padx=25, pady=18)
@@ -615,7 +615,7 @@ class TeamIntroductionPage(tk.Frame):
         self.back_button.pack(pady=25)
         self._add_button_hover(self.back_button)
 
-        # Add the scoreboard button
+        
         self.create_scoreboard_button()
 
     def create_scoreboard_button(self):
@@ -624,9 +624,9 @@ class TeamIntroductionPage(tk.Frame):
             self,
             text="Go to Scoreboard",
             font=("Poppins", 12, "bold"),
-            fg=theme["btn_fg"], # This should now work
-            bg=theme["btn_bg"], # This should now work
-            activebackground=theme["scrollbar_active_bg"], # This should now work
+            fg=theme["btn_fg"], 
+            bg=theme["btn_bg"], 
+            activebackground=theme["scrollbar_active_bg"], 
             bd=0,
             padx=25,
             pady=6,
@@ -639,7 +639,7 @@ class TeamIntroductionPage(tk.Frame):
         self._add_button_hover(self.scoreboard_button)
 
     def _on_canvas_configure(self, event):
-        # Adjust scroll region on resize
+        
         self.scroll_canvas.config(scrollregion=self.scroll_canvas.bbox("all"))
 
     def _add_button_hover(self, button):
@@ -692,17 +692,17 @@ class ScoreboardApp(tk.Frame):
 
         self.config(bg=theme["bg"])
 
-        # Outer frame to center content
+        
         self.outer_frame = tk.Frame(self, bg=theme["bg"], padx=20, pady=20)
         self.outer_frame.pack(expand=True, fill="both")
 
-        # Title label
+        
         self.title_label = tk.Label(
             self.outer_frame, text="Scoreboard", font=("Poppins", 28, "bold"), fg=theme["fg"], bg=theme["bg"]
         )
         self.title_label.grid(row=0, column=0, columnspan=5, pady=(0, 20))
 
-        # Team names entries with labels
+        
         tk.Label(
             self.outer_frame, text="Team AO:", font=("Poppins", 16, "bold"), fg=theme["fg"], bg=theme["bg"]
         ).grid(row=1, column=0, sticky="e", padx=10)
@@ -718,19 +718,19 @@ class ScoreboardApp(tk.Frame):
         self.ao_name.insert(0, "Naruto")
         self.aka_name.insert(0, "Sasuke")
 
-        # Scores frames
+        
         self.ao_frame = tk.Frame(self.outer_frame, bg=theme["ao_bg"], padx=20, pady=15, bd=2, relief="ridge")
         self.ao_frame.grid(row=2, column=0, columnspan=2, pady=10, sticky="nsew")
 
         self.aka_frame = tk.Frame(self.outer_frame, bg=theme["aka_bg"], padx=20, pady=15, bd=2, relief="ridge")
         self.aka_frame.grid(row=2, column=3, columnspan=2, pady=10, sticky="nsew")
 
-        # Configure grid weights
+        
         self.outer_frame.grid_columnconfigure(1, weight=1)
         self.outer_frame.grid_columnconfigure(4, weight=1)
         self.outer_frame.grid_rowconfigure(2, weight=1)
 
-        # AO Score label and buttons
+        
         self.ao_score_label = tk.Label(
             self.ao_frame, text="0", font=("Poppins", 48, "bold"), fg="white", bg=theme["ao_bg"]
         )
@@ -742,7 +742,7 @@ class ScoreboardApp(tk.Frame):
         self._create_score_button(btn_ao_frame, "+1", self.add_ao, theme).pack(side="left", padx=8)
         self._create_score_button(btn_ao_frame, "-1", self.sub_ao, theme).pack(side="left", padx=8)
 
-        # AKA Score label and buttons
+       
         self.aka_score_label = tk.Label(
             self.aka_frame, text="0", font=("Poppins", 48, "bold"), fg="white", bg=theme["aka_bg"]
         )
@@ -754,7 +754,7 @@ class ScoreboardApp(tk.Frame):
         self._create_score_button(btn_aka_frame, "+1", self.add_aka, theme).pack(side="left", padx=8)
         self._create_score_button(btn_aka_frame, "-1", self.sub_aka, theme).pack(side="left", padx=8)
 
-        # Timer Label
+       
         self.timer_label = tk.Label(
             self.outer_frame,
             text="0:10",
@@ -768,7 +768,7 @@ class ScoreboardApp(tk.Frame):
         )
         self.timer_label.grid(row=3, column=0, columnspan=5, pady=20, sticky="ew")
 
-        # Timer buttons
+        
         btn_frame = tk.Frame(self.outer_frame, bg=theme["bg"])
         btn_frame.grid(row=4, column=0, columnspan=5, pady=(0, 10))
 
@@ -778,7 +778,7 @@ class ScoreboardApp(tk.Frame):
         self._create_action_button(btn_frame, "Save Score", self.save_score_to_csv, theme).pack(side="left", padx=10)
 
 
-        # Navigation and quit buttons
+        
         nav_frame = tk.Frame(self.outer_frame, bg=theme["bg"])
         nav_frame.grid(row=5, column=0, columnspan=5, pady=10)
 
@@ -878,7 +878,7 @@ class ScoreboardApp(tk.Frame):
         self.aka_score = max(0, self.aka_score - 1)
         self.aka_score_label.config(text=str(self.aka_score))
 
-    def save_score_to_csv(self): # ini akan otomatis aman walau sudah ada di atas
+    def save_score_to_csv(self):
         import csv
         ao_name = self.ao_name.get()
         aka_name = self.aka_name.get()
@@ -903,13 +903,13 @@ class App(tk.Tk):
         container = tk.Frame(self)
         container.pack(fill="both", expand=True)
 
-        # Initialize pages in the desired order
+       
         for Page in (WelcomePage, TeamIntroductionPage, ScoreboardApp):
             frame = Page(container, self)
             self.frames[Page.__name__] = frame
             frame.place(relwidth=1, relheight=1)
 
-        self.show_frame("WelcomePage") # Show the WelcomePage first
+        self.show_frame("WelcomePage")
 
     def show_frame(self, page_name):
         frame = self.frames[page_name]
