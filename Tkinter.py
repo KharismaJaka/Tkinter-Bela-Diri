@@ -2,6 +2,17 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import ImageTk, Image
 
+def interpolate_color(c1, c2, t):
+    """Interpolate between two hex colors c1 and c2 by fraction t (0 to 1)."""
+    c1 = c1.lstrip("#")
+    c2 = c2.lstrip("#")
+    r1, g1, b1 = int(c1[0:2], 16), int(c1[2:4], 16), int(c1[4:6], 16)
+    r2, g2, b2 = int(c2[0:2], 16), int(c2[2:4], 16), int(c2[4:6], 16)
+    r = int(r1 + (r2 - r1) * t)
+    g = int(g1 + (g2 - g1) * t)
+    b = int(b1 + (b2 - b1) * t)
+    return f"#{r:02x}{g:02x}{b:02x}"
+
 class WelcomePage(tk.Frame):
     def __init__(self, master, controller):
         super().__init__(master)
@@ -42,7 +53,13 @@ class WelcomePage(tk.Frame):
 
         self.config(bg=self.themes[self.current_theme]["bg"])
 
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height, highlightthickness=0, bg=self.themes[self.current_theme]["canvas_bg"])
+        self.canvas = tk.Canvas(
+            self,
+            width=self.width, 
+            height=self.height, 
+            highlightthickness=0, 
+            bg=self.themes[self.current_theme]["canvas_bg"],
+        )
         self.canvas.pack(fill="both", expand=True)
 
         self.draw_background()
@@ -63,35 +80,69 @@ class WelcomePage(tk.Frame):
         self.draw_background()
         self.create_title()
         self.create_description()
+        
         self.start_button.config(
-            fg=theme["btn_fg"], bg=theme["btn_bg"],
-            activebackground="#00cca3" if self.current_theme=="dark" else "#1e40af",
-            activeforeground="white"
+            fg=theme["btn_fg"], 
+            bg=theme["btn_bg"],
+            activebackground=theme["scrollbar_active_bg"],
+            activeforeground="white",
         )
         self.feedback_label.config(fg=theme["fg"], bg=theme["bg"])
         self.label_credit.config(fg=theme["credit_fg"], bg=theme["bg"])
+        
         self.info_button.config(
-            fg=theme["btn_fg"], bg=theme["btn_bg"],
-            activebackground="#00cca3" if self.current_theme=="dark" else "#1e40af"
+            fg=theme["btn_fg"], 
+            bg=theme["btn_bg"],
+            activebackground=theme["scrollbar_active_bg"],
         )
         self.settings_button.config(
-            fg=theme["btn_fg"], bg=theme["btn_bg"],
-            activebackground="#00cca3" if self.current_theme=="dark" else "#1e40af"
+            fg=theme["btn_fg"], 
+            bg=theme["btn_bg"],
+            activebackground=theme["scrollbar_active_bg"],
         )
         self.theme_toggle_button.config(
-            fg=theme["btn_fg"], bg=theme["btn_bg"],
-            activebackground="#00cca3" if self.current_theme=="dark" else "#1e40af"
+            fg=theme["btn_fg"], 
+            bg=theme["btn_bg"],
+            activebackground=theme["scrollbar_active_bg"],
         )
         self.label_desc.config(fg=theme["desc_fg"], bg=theme["bg"])
         self.label_image.config(bg=theme["bg"])
 
+    def fade_colors(self, start_colors, end_colors, steps=10, delay=50, step=0):
+        """Animate color transitions for bg and fg of various widgets."""
+        if step > steps:
+            return
+
+        t = step / steps
+        new_bg = interpolate_color(start_colors["bg"], end_colors["bg"], t)
+        new_fg = interpolate_color(start_colors["fg"], end_colors["fg"], t)
+        new_btn_bg = interpolate_color(start_colors["btn_bg"], end_colors["btn_bg"], t)
+        new_btn_fg = interpolate_color(start_colors["btn_fg"], end_colors["btn_fg"], t)
+
+        self.config(bg=new_bg)
+        self.canvas.config(bg=new_btn_bg)
+        self.start_button.config(bg=new_btn_bg, fg=new_btn_fg)
+        self.feedback_label.config(bg=new_bg, fg=new_fg)
+        self.label_credit.config(bg=new_bg, fg=new_fg)
+        self.info_button.config(bg=new_btn_bg, fg=new_btn_fg)
+        self.settings_button.config(bg=new_btn_bg, fg=new_btn_fg)
+        self.theme_toggle_button.config(bg=new_btn_bg, fg=new_btn_fg)
+        self.label_desc.config(bg=new_bg, fg=new_fg)
+        self.label_image.config(bg=new_bg)
+
+        self.after(delay, lambda: self.fade_colors(start_colors, end_colors, steps, delay, step + 1))
+
     def toggle_theme(self):
+        start_colors = self.themes[self.current_theme]
         self.current_theme = "light" if self.current_theme == "dark" else "dark"
-        self.apply_theme()
+        end_colors = self.themes[self.current_theme]
+        self.fade_colors(start_colors, end_colors)
 
     def draw_background(self):
         if self.current_theme == "light":
-            self.canvas.create_rectangle(0, 0, self.width, self.height, fill=self.themes["light"]["canvas_bg"], outline="")
+            self.canvas.create_rectangle(
+                0, 0, self.width, self.height, fill=self.themes["light"]["canvas_bg"], outline=""
+            )
         else:
             self.draw_sky_gradient()
             self.draw_sun(1150, 120, 70)
@@ -101,14 +152,14 @@ class WelcomePage(tk.Frame):
 
     def draw_sky_gradient(self):
         if self.current_theme == "light":
-            # No gradient, just solid light sky
             return
+            
         from_colors = [(10, 25, 70), (25, 76, 146), (82, 137, 217), (176, 214, 235)]
         steps = 150
-        section_height = self.height / (len(from_colors) - 1)
+        
         for i in range(steps):
             section_index = int(i / (steps / (len(from_colors) -1)))
-            if section_index >= len(from_colors) -1 :
+            if section_index >= len(from_colors) - 1 :
                 section_index = len(from_colors) - 2
             color1 = from_colors[section_index]
             color2 = from_colors[section_index + 1]
@@ -118,13 +169,14 @@ class WelcomePage(tk.Frame):
             b = int(color1[2] + (color2[2] - color1[2]) * ratio)
             color = f"#{r:02x}{g:02x}{b:02x}"
             y1 = int(i * self.height / steps)
-            y2 = int((i+1)* self.height / steps)
-            self.canvas.create_rectangle(0,y1,self.width,y2, fill=color, outline="")
+            y2 = int((i+1) * self.height / steps)
+            self.canvas.create_rectangle(0, y1, self.width, y2, fill=color, outline="")
 
     def draw_sun(self, x, y, radius):
         if self.current_theme == "light":
             self.canvas.create_oval(x - radius, y - radius, x + radius, y + radius, fill="#FFEA00", outline="")
             return
+            
         colors = ["#FFFACD", "#FFF68F", "#FFEF6E", "#FFD700"]
         for i, color in enumerate(colors[::-1]):
             r = radius + i * 12
@@ -133,7 +185,8 @@ class WelcomePage(tk.Frame):
 
     def draw_clouds(self):
         if self.current_theme == "light":
-            return  # Skip clouds in light mode for simplicity
+            return  
+            
         cloud_positions = [(200, 120, 120), (600, 90, 150), (900, 150, 100), (1100, 130, 130)]
         for x, y, size in cloud_positions:
             self.draw_cloud(x, y, size)
@@ -141,21 +194,22 @@ class WelcomePage(tk.Frame):
     def draw_cloud(self, x, y, size):
         if self.current_theme == "light":
             return
+            
         radius = size // 4
         circles = [
             (x, y),
             (x + radius * 1.2, y - radius // 2),
             (x + radius * 2.5, y - radius // 4),
             (x + radius * 3.7, y),
-            (x + radius * 4.5, y - radius // 3)
+            (x + radius * 4.5, y - radius // 3),
         ]
         for cx, cy in circles:
-            self.canvas.create_oval(cx - radius, cy - radius, cx + radius, cy + radius,
-                                    fill="white", outline="")
+            self.canvas.create_oval(cx - radius, cy - radius, cx + radius, cy + radius, fill="white", outline="")
 
     def draw_grass(self, x_start, y_start, width_area, height_area):
         if self.current_theme == "light":
-            return  # No grass in light mode
+            return  
+            
         for i in range(0, width_area, 15):
             x = x_start + i
             points = [x, y_start, x + 7, y_start - 30, x + 14, y_start]
@@ -170,6 +224,7 @@ class WelcomePage(tk.Frame):
     def draw_tree(self, x, y):
         if self.current_theme == "light":
             return
+            
         self.canvas.create_rectangle(x + 10, y, x + 30, y + 100, fill="#5D3A00", outline="#3E2700")
         self.canvas.create_oval(x - 50, y - 120, x + 70, y + 20, fill="#065214", outline="#033d0a")
         self.canvas.create_oval(x - 40, y - 150, x + 60, y - 40, fill="#0A7B1E", outline="#05460d")
