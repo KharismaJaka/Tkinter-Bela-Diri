@@ -37,10 +37,10 @@ Aplikasi ini menghadirkan antarmuka grafis menarik, dukungan tema gelap/terang, 
 5.	Enjoy the journey, pendekar! 🥷✨
 
 🧑‍💻 Kelompok 10
-•	Elsy Aliffia Sirony Putri — 2417051025
-•	Kharisma Jaka Harum — 2417051068
-•	Rheal Iftiqar Rozak — 2417051029
-•	Yulia Nuritnasari — 2457051008 
+1. Elsy Aliffia Sirony Putri — 2417051025
+2.	Kharisma Jaka Harum — 2417051068
+3.	Rheal Iftiqar Rozak — 2417051029
+4.	Yulia Nuritnasari — 2457051008 
 
 📁 Struktur File
 beladiritolong.py       
