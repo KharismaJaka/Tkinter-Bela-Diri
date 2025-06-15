@@ -1,139 +1,143 @@
 import csv
-import hashlib
+from datetime import datetime
+import os
 
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
-
-users = [
-    {"id": 1, "username": "player1", "password_hash": hash_password("password")},
-    {"id": 2, "username": "player2", "password_hash": hash_password("123456")},
-    {"id": 3, "username": "player3", "password_hash": hash_password("qwerty")}
-]
-
-with open('users.csv', 'w', newline='') as csvfile:
-    fieldnames = ['id', 'username', 'password_hash']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    
-    writer.writeheader()
-    for user in users:
-        writer.writerow(user)
-
-        import csv
-from datetime import datetime, timedelta
-
-scores = [
-    {
-        "id": 1,
-        "user_id": 1,
-        "ao_name": "Naruto",
-        "aka_name": "Sasuke",
-        "ao_score": 5,
-        "aka_score": 3,
-        "timestamp": (datetime.now() - timedelta(days=1, hours=9)).strftime("%Y-%m-%d %H:%M:%S")
-    },
-    {
-        "id": 2,
-        "user_id": 1,
-        "ao_name": "Goku",
-        "aka_name": "Vegeta",
-        "ao_score": 10,
-        "aka_score": 8,
-        "timestamp": (datetime.now() - timedelta(days=1, hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-    },
-    {
-        "id": 3,
-        "user_id": 2,
-        "ao_name": "Luffy",
-        "aka_name": "Zoro",
-        "ao_score": 7,
-        "aka_score": 9,
-        "timestamp": (datetime.now() - timedelta(days=1, hours=7)).strftime("%Y-%m-%d %H:%M:%S")
-    },
-    {
-        "id": 4,
-        "user_id": 3,
-        "ao_name": "Ichigo",
-        "aka_name": "Rukia",
-        "ao_score": 12,
-        "aka_score": 11,
-        "timestamp": (datetime.now() - timedelta(days=1, hours=6)).strftime("%Y-%m-%d %H:%M:%S")
-    },
-    {
-        "id": 5,
-        "user_id": 2,
-        "ao_name": "Light",
-        "aka_name": "Yagami",
-        "ao_score": 15,
-        "aka_score": 12,
-        "timestamp": (datetime.now() - timedelta(hours=5)).strftime("%Y-%m-%d %H:%M:%S")
-    },
-    {
-        "id": 6,
-        "user_id": 3,
-        "ao_name": "Eren",
-        "aka_name": "Mikasa",
-        "ao_score": 8,
-        "aka_score": 6,
-        "timestamp": (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
-    },
-    {
-        "id": 7,
-        "user_id": 1,
-        "ao_name": "Ash",
-        "aka_name": "Pikachu",
-        "ao_score": 20,
-        "aka_score": 18,
-        "timestamp": (datetime.now() - timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
-    }
-]
-
-with open('scores.csv', 'w', newline='') as csvfile:
-    fieldnames = ['id', 'user_id', 'ao_name', 'aka_name', 'ao_score', 'aka_score', 'timestamp']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    
-    writer.writeheader()
-    for score in scores:
-        writer.writerow(score)
-
-        import csv
-from collections import defaultdict
-
-users = {}
-with open('users.csv', 'r') as user_file:
-    reader = csv.DictReader(user_file)
-    for row in reader:
-        users[row['id']] = row['username']
-
-player_scores = defaultdict(dict)
-with open('scores.csv', 'r') as score_file:
-    reader = csv.DictReader(score_file)
-    for row in reader:
-        user_id = row['user_id']
-        total = int(row['ao_score']) + int(row['aka_score'])
-        timestamp = row['timestamp']
+class CSVHandler:
+    def __init__(self):
+        self.data_dir = "data"
+        os.makedirs(self.data_dir, exist_ok=True)
         
+        # File paths
+        self.team_members_file = os.path.join(self.data_dir, "team_members.csv")
+        self.scoreboard_file = os.path.join(self.data_dir, "scoreboard_data.csv")
+        self.settings_file = os.path.join(self.data_dir, "settings.csv")
+        self.feedback_file = os.path.join(self.data_dir, "feedback_log.csv")
+        self.history_file = os.path.join(self.data_dir, "game_history.csv")
         
-        if 'score' not in player_scores[user_id] or total > player_scores[user_id]['score']:
-            player_scores[user_id] = {
-                'username': users[user_id],
-                'score': total,
-                'timestamp': timestamp
-            }
+        # Initialize files if they don't exist
+        self._initialize_files()
 
-sorted_scores = sorted(
-    player_scores.values(),
-    key=lambda x: x['score'],
-    reverse=True
-)
+    def _initialize_files(self):
+        """Create CSV files with headers if they don't exist"""
+        # Team members
+        if not os.path.exists(self.team_members_file):
+            with open(self.team_members_file, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(['name', 'nim'])
+                writer.writerows([
+                    ['Elsy Aliffia Sirony Putri', '2417051025'],
+                    ['Kharisma Jaka Harum', '2417051068'],
+                    ['Rheal Iftiqar Rozak', '2417051029'],
+                    ['Yulia Nuritnasari', '2457051008']
+                ])
+        
+        # Scoreboard data
+        if not os.path.exists(self.scoreboard_file):
+            with open(self.scoreboard_file, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(['team_name', 'score', 'last_updated'])
+                writer.writerow(['Naruto', '0', datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
+                writer.writerow(['Sasuke', '0', datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
+        
+        # Settings
+        if not os.path.exists(self.settings_file):
+            with open(self.settings_file, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(['setting_name', 'value'])
+                writer.writerow(['theme', 'dark'])
+                writer.writerow(['data_privacy', 'False'])
+        
+        # Feedback log (just create empty with header)
+        if not os.path.exists(self.feedback_file):
+            with open(self.feedback_file, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(['timestamp', 'feedback_message'])
+        
+        # Game history (just create empty with header)
+        if not os.path.exists(self.history_file):
+            with open(self.history_file, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(['start_time', 'end_time', 'winner', 'ao_score', 'aka_score'])
 
-with open('leaderboard.csv', 'w', newline='') as leaderboard_file:
-    writer = csv.writer(leaderboard_file)
-    writer.writerow(['rank', 'username', 'total_score', 'last_played'])
-    
-    for rank, data in enumerate(sorted_scores, 1):
-        writer.writerow([
-            rank,
-            data['username'],
-            data['score'],
-            data['timestamp']
-        ])
+    def load_team_members(self):
+        """Load team members from CSV"""
+        team_members = []
+        with open(self.team_members_file, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                team_members.append((row['name'], row['nim']))
+        return team_members
+
+    def load_scoreboard_data(self):
+        """Load scoreboard data from CSV"""
+        teams = {}
+        with open(self.scoreboard_file, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                teams[row['team_name']] = {
+                    'score': int(row['score']),
+                    'last_updated': row['last_updated']
+                }
+        return teams
+
+    def save_scoreboard_data(self, ao_name, ao_score, aka_name, aka_score):
+        """Save current scoreboard data to CSV"""
+        with open(self.scoreboard_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['team_name', 'score', 'last_updated'])
+            writer.writerow([ao_name, ao_score, datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
+            writer.writerow([aka_name, aka_score, datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
+
+    def load_settings(self):
+        """Load settings from CSV"""
+        settings = {}
+        with open(self.settings_file, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                # Convert string 'False'/'True' to boolean
+                if row['value'].lower() in ('true', 'false'):
+                    settings[row['setting_name']] = row['value'].lower() == 'true'
+                else:
+                    settings[row['setting_name']] = row['value']
+        return settings
+
+    def save_settings(self, settings):
+        """Save settings to CSV"""
+        with open(self.settings_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['setting_name', 'value'])
+            for key, value in settings.items():
+                writer.writerow([key, str(value)])
+
+    def log_feedback(self, message):
+        """Log feedback message to CSV"""
+        with open(self.feedback_file, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([datetime.now().strftime('%Y-%m-%d %H:%M:%S'), message])
+
+    def log_game_result(self, start_time, end_time, winner, ao_score, aka_score):
+        """Log game result to history CSV"""
+        with open(self.history_file, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([
+                start_time.strftime('%Y-%m-%d %H:%M:%S'),
+                end_time.strftime('%Y-%m-%d %H:%M:%S'),
+                winner,
+                ao_score,
+                aka_score
+            ])
+
+    def get_game_history(self):
+        """Get all game history records"""
+        history = []
+        with open(self.history_file, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                history.append({
+                    'start_time': row['start_time'],
+                    'end_time': row['end_time'],
+                    'winner': row['winner'],
+                    'ao_score': row['ao_score'],
+                    'aka_score': row['aka_score']
+                })
+        return history
