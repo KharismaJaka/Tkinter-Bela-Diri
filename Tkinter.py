@@ -276,17 +276,28 @@ class WelcomePage(tk.Frame):
         self.start_button = tk.Button(
             self,
             text="START YOUR JOURNEY",
-            font=("Poppins", 22, "bold"),
-            fg=theme["btn_fg"], bg=theme["btn_bg"], activebackground="#00cca3",
-            activeforeground="white", bd=0, padx=60, pady=18,
-            cursor="hand2", command=self.bangkit_with_animation
+            font=("Poppins", 24, "bold"),
+            fg=theme["btn_fg"],
+            bg=theme["btn_bg"],
+            activebackground=theme["scrollbar_active_bg"],
+            activeforeground="white",
+            bd=0,
+            padx=70,
+            pady=18,
+            cursor="hand2",
+            command=self.bangkit_with_animation,
+            relief="ridge",
+            borderwidth=2,
         )
         self.start_button.place(relx=0.5, rely=0.5, anchor="center")
+        self._add_button_hover(self.start_button)
 
     def create_feedback_label(self):
         theme = self.themes[self.current_theme]
-        self.feedback_label = tk.Label(self, text="", font=("Poppins", 16, "bold italic"), fg=theme["fg"], bg=theme["bg"])
-        self.feedback_label.place(relx=0.5, rely=0.58, anchor="center")
+        self.feedback_label = tk.Label(
+            self, text="", font=("Poppins", 18, "italic"), fg=theme["fg"], bg=theme["bg"]
+        )
+        self.feedback_label.place(relx=0.5, rely=0.60, anchor="center")
 
     def create_image_label(self):
         self.image1 = ImageTk.PhotoImage(Image.open("pendekar_diam.png").resize((320, 320)))
@@ -308,12 +319,21 @@ class WelcomePage(tk.Frame):
 
         self.info_button = tk.Button(
             self,
-            text="❓ Info",
-            font=("Poppins", 12),
-            fg=theme["btn_fg"], bg=theme["btn_bg"], activebackground="#00cca3",
-            bd=0, padx=20, pady=5, cursor="hand2", command=self.show_info
+            text="Info",
+            font=("Poppins", 12, "bold"),
+            fg=theme["btn_fg"],
+            bg=theme["btn_bg"],
+            activebackground=theme["scrollbar_active_bg"],
+            bd=0,
+            padx=25,
+            pady=6,
+            cursor="hand2",
+            command=self.show_info,
+            relief="ridge",
+            borderwidth=1,
         )
         self.info_button.place(relx=0.0, rely=0.0, anchor="nw", x=10, y=40)
+        self._add_button_hover(self.info_button)
 
     def create_settings_button(self):
         theme = self.themes[self.current_theme]
