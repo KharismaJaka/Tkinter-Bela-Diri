@@ -31,7 +31,7 @@ Aplikasi ini menghadirkan antarmuka grafis menarik, dukungan tema gelap/terang, 
 📦 Cara Menjalankan
 1.	Pastikan Python dan Pillow sudah terinstall:
 2.	pip install pillow
-3.	Jalankan file utama:
+3.	Jalankan file utama
 4.	python beladiritolong.py
 5.	Enjoy the journey, pendekar! 🥷✨
 
